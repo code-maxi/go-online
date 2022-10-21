@@ -56,7 +56,7 @@ function UserItem(props: {
 }
 
 export function GoTopComponent(props: GoTopComponentPropsI) {
-    return <div className="d-flex w-100 flex-row justify-content-between align-items-center mb-3 mt-3 ms-auto me-auto">
+    return <div className="d-flex w-100 flex-row justify-content-around align-items-center mb-3 mt-3 ms-auto me-auto">
         <LostPieces color="b" lostNumber={props.bLostPoints} />
         <Stack direction="horizontal" gap={2}>
             <PassActionBadge type={

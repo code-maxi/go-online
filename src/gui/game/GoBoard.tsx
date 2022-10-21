@@ -8,18 +8,25 @@ export interface GoBoardPropsI {
 }
 
 const GoBoardStyleConsts = {
-    padding: 50,
+    padding: 30,
     backgroundColor: '#B07C4F',
     gridStrokeWidth: 2,
     gridColor: 'black',
     gridIntersectionPointRadius: 5,
     relativePieceRadiusCalibre: 0.85,
-    borderRadius: 30,
+    borderRadius: 20,
     boxShaddow: '10px 10px 30px grey',
     normalCanvasWidth: 400
 }
 
-function paintGoBoard(gc: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number, board?: GoBoardPropsI, playerColor?: string, previewItem?: PreviewItemT) {
+function paintGoBoard(
+    gc: CanvasRenderingContext2D, 
+    canvasWidth: number, 
+    canvasHeight: number, 
+    board?: GoBoardPropsI, 
+    playerColor?: string, 
+    previewItem?: PreviewItemT
+) {
     // Painting the grid...
 
     const padding = GoBoardStyleConsts.padding * (canvasWidth / GoBoardStyleConsts.normalCanvasWidth)
@@ -91,14 +98,6 @@ function paintGoBoard(gc: CanvasRenderingContext2D, canvasWidth: number, canvasH
 
         gc.restore()
     }
-    else {
-        gc.textAlign = 'center'
-        gc.textBaseline = 'middle'
-        gc.font = '30px monospace'
-        gc.lineWidth = 2
-        gc.fillStyle = 'black'
-        gc.fillText('Go Board loading...', canvasWidth/2, canvasHeight/2)
-    }
 }
 
 function getMouseGridPosition(mouseX: number, mouseY: number, board: GoBoardPropsI, canvasWidth: number, canvasHeight: number): PreviewItemT {
@@ -118,6 +117,8 @@ export interface GoGUIBoardPropsI {
     width: number, 
     height: number,
     previewColor?: string,
+    message?: string,
+    messageVariant?: string,
     onMoveClicked: (gridX: number, gridY: number) => void
 }
 
@@ -200,16 +201,27 @@ export class GoBoard extends React.Component<GoGUIBoardPropsI, GoGUIBoardStateI>
     }
 
     render() {
-        return <div className="w-100 d-flex justify-content-center align-items-center">
+        const borderRadius = GoBoardStyleConsts.borderRadius * (this.state.canvasSize / GoBoardStyleConsts.normalCanvasWidth) + 'px'
+
+        return <div className="w-100 d-flex position-relative justify-content-center align-items-center">
             <canvas
                 style={{
-                    borderRadius: GoBoardStyleConsts.borderRadius * (this.state.canvasSize / GoBoardStyleConsts.normalCanvasWidth) + 'px',
+                    borderRadius: borderRadius,
                     boxShadow: GoBoardStyleConsts.boxShaddow
                 }}
                     ref={(element) => this.canvasRef = element}
                     width={this.state.canvasSize}
                     height={this.state.canvasSize}
                 />
+            <div 
+                className={(this.props.message ? "d-flex" : "d-none") + " position-absolute top-0 start-0 w-100 h-100 justify-content-center align-items-center"}
+            >
+                <div 
+                    className={"px-3 py-2 fw-bold fs-5 text-bold rounded shadow bg-" + (this.props.messageVariant ? this.props.messageVariant + ' text-light' : 'light')}
+                >
+                    {this.props.message}
+                </div>
+            </div>
         </div>
     }    
 }

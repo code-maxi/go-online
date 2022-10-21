@@ -1,4 +1,4 @@
-import { Button, Collapse, Stack } from "react-bootstrap"
+import { Button, Collapse } from "react-bootstrap"
 import { getIcon } from "../Icons"
 
 export interface GoBottomComponentPropsI {
@@ -7,7 +7,12 @@ export interface GoBottomComponentPropsI {
     maxWidth: string,
     errorMessage?: string,
     otherWantsToPass?: boolean,
-    otherWantsToGiveup?: boolean
+    otherWantsToGiveup?: boolean,
+    giveUpText: string,
+    onPass: () => void,
+    onGiveUp: () => void,
+    disableButtons: boolean,
+    buttonsVisible: boolean,
 }
 
 function SoundButton(props: { on: boolean, onVolumeToggled: (b: boolean) => void }) {
@@ -23,34 +28,31 @@ function GoAlert(props: { text: string, variant: string, onButtonPressed?: () =>
     </div>
 }
 
+function InvitePerson(props: {onInvite: () => void}) {
+    return <Button variant="success" onClick={props.onInvite}>
+        { getIcon('invite-person', 22) }
+        Invite Person
+    </Button>
+}
+
 export function GoBottomComponent(props: GoBottomComponentPropsI) {
-    return <div className="ms-auto me-auto d-flex flex-column mt-4 " style={{ maxWidth: props.maxWidth }}>
-        <Collapse className={props.errorMessage !== undefined ? '' : 'd-none'}>
-            <GoAlert 
-                text={props.errorMessage ? props.errorMessage : ''} 
-                variant="danger"
-            />
-        </Collapse>
-        <Collapse className={props.otherWantsToGiveup === true ? '' : 'd-none'}>
+    return <div className="d-flex w-100 flex-column align-items-center mt-4 " style={{ maxWidth: props.maxWidth }}>
+        <div className={props.otherWantsToGiveup === true ? undefined : 'd-none'}>
             <GoAlert 
                 text={"The other one wants to give up. Do you agree?"} 
                 variant="danger"
-                button="Agree"
-                onButtonPressed={() => console.log('agree pressed!')}
             />
-        </Collapse>
-        <Collapse className={props.otherWantsToPass === true ? '' : 'd-none'}>
+        </div>
+        <div className={props.otherWantsToPass === true ? undefined : 'd-none'}>
             <GoAlert 
                 text={"The other one wants to pass. Do you agree?"} 
                 variant="primary"
-                button="Agree"
-                onButtonPressed={() => console.log('agree pressed 2!')}
             />
-        </Collapse>
-        <div className="d-flex mt-2 align-items-start">
+        </div>
+        <div className="d-flex mt-2">
             <SoundButton on={props.volumeOn} onVolumeToggled={props.onVolumeToggled} />
-            <Button variant="outline-danger" className="flex-grow-0 ms-auto me-2">Giveup</Button>
-            <Button variant="primary">Pass</Button>
+            <Button className={(props.buttonsVisible ? '' : 'd-none') + "flex-grow-0 ms-auto me-2"} disabled={props.disableButtons} variant="outline-danger" onClick={props.onGiveUp}>{props.giveUpText}</Button>
+            <Button className={props.buttonsVisible ? '' : 'd-none'} disabled={props.disableButtons} variant="primary" onClick={props.onPass}>Pass</Button>
         </div>
     </div>
 }

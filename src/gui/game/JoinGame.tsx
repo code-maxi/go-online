@@ -19,21 +19,29 @@ export interface JoinGameStateI {
 
 function JoinGameBody(props: JoinGameStateI) {
     const [name, setName] = React.useState('')
+
+    React.useEffect(() => {
+        document.getElementById('go-join-text-field')?.focus()
+    }, [])
+
     return <div className="d-flex flex-column align-items-center">
-        <h3 className="font-monospace mb-3">{props.gameName}</h3>
+        <h3 className="font-monospace mb-3">#{props.gameName}</h3>
+
         <Form.Label className="mb-3">
             Join {!props.bPlayer && !props.wPlayer ? 'empty' : ''} Game <b>{props.gameName+' '}</b> 
             as <b>{props.futureRole ? (props.futureRole === 'b' ? 'black player' : 'white player') : 'a viewer'}</b>
-            {props.futureRole ? <> and play against <b>{(props.futureRole === 'b' ? props.wPlayer : props.bPlayer)}</b></> : ''}.
+            {props.futureRole && (props.wPlayer || props.bPlayer) ? <> and play against <b>{(props.futureRole === 'b' ? props.wPlayer : props.bPlayer)}</b></> : ''}.
         </Form.Label>
 
         <InputGroup hasValidation>
             <Form.Control
                 type="text"
                 placeholder="Type your name here..."
-                value={''}
+                value={name}
                 isInvalid={props.error !== undefined}
                 onChange={evt => setName(evt.currentTarget.value)}
+                onKeyDown={evt => {if (evt.code === 'Enter') props.onJoin(name)} }
+                id="go-join-text-field"
             />
             
             <Button 
@@ -61,10 +69,33 @@ function JoinGameSpinner(props: {errorText?: string}) {
 export function JoinGame(
     props: JoinGameStateI
 ) {
-    return <div className="d-block ms-auto me-auto mt-5" style={{ maxWidth: '340px' }}>
-        {
-            props.loading === true ? <JoinGameSpinner errorText={props.error} /> : <JoinGameBody {...props} />
-        }
+    return <GoGameBackground>
+        <div className="d-block ms-auto me-auto mt-5 p-4 bg-light rounded" style={{ maxWidth: '370px', boxShadow: '0 0 70px rgba(0,0,0,0.7)' }}>
+            {
+                props.loading === true ? <JoinGameSpinner errorText={props.error} /> : <JoinGameBody {...props} />
+            }
+        </div>
+    </GoGameBackground>
+}
+
+export function GameDoesNotExistError(props: { gameName: string }) {
+    return <GoGameBackground>
+        <div className="w-100 d-block mt-5 ms-auto me-auto" style={{ maxWidth: '300px' }}>
+            <Alert variant="danger" style={{ boxShadow: '0 0 70px rgba(0,0,0,0.7)' }}>
+                <h4 className="alert-heading">Oh no – we can't see anything!</h4>
+                <p>It seems as the game "{props.gameName}" does not exist anymore. We're sorry!</p>
+            </Alert>
+        </div>
+    </GoGameBackground>
+}
+
+export function GoGameBackground(props: React.PropsWithChildren<{}>) {
+    return <div className="d-flex justify-content-center align-items-center w-100" style={{
+        height: '100vh',
+        backgroundImage: 'url(/images/go_background.jpg)',
+        backgroundSize: 'cover'
+    }}>
+        {props.children}
     </div>
 }
 
